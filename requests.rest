@@ -1,0 +1,32 @@
+
+GET http://localhost:8080/api/items/getitems
+
+
+###
+POST http://localhost:8080/api/items/postitems
+Content-Type: application/json
+
+{
+    "name": "Samosa",
+    "price": 5,
+    "category": "side dish",
+    "image": "https://www.indianhealthyrecipes.com/wp-content/uploads/2021/12/samosa-recipe.jpg"
+}
+
+###
+PATCH http://localhost:8080/api/items/65c90a7a3a38083f90cd0505
+# Content-Type: application/json
+
+{
+    "name": "Masala Dosa",
+    "price": 5,
+    "category": "breakfast",
+    "image": "https://www.palatesdesire.com/wp-content/uploads/2022/09/Mysore-masala-dosa-recipe@palates-desire.jpg"
+}
+
+###
+DELETE http://localhost:8080/api/items/65f207229817fc02526d6bd2
+
+
+###
+GET http://localhost:8080/api/items/65f207229817fc02526d6bd2
