@@ -7,19 +7,19 @@ POST http://localhost:8080/api/items/postitems
 Content-Type: application/json
 
 {
-    "name": "Samosa",
-    "price": 5,
-    "category": "side dish",
-    "image": "https://www.indianhealthyrecipes.com/wp-content/uploads/2021/12/samosa-recipe.jpg"
+    "name": "Jalebi",
+    "price": 7,
+    "category": "dessert",
+    "image": "https://www.bitesbee.com/wp-content/uploads/2021/09/Jalebi.jpg"
 }
 
 ###
-PATCH http://localhost:8080/api/items/65c90a7a3a38083f90cd0505
-# Content-Type: application/json
+PUT http://localhost:8080/api/items/65c90a7a3a38083f90cd0505
+Content-Type: application/json
 
 {
     "name": "Masala Dosa",
-    "price": 5,
+    "price": 7,
     "category": "breakfast",
     "image": "https://www.palatesdesire.com/wp-content/uploads/2022/09/Mysore-masala-dosa-recipe@palates-desire.jpg"
 }
@@ -29,4 +29,28 @@ DELETE http://localhost:8080/api/items/65f207229817fc02526d6bd2
 
 
 ###
-GET http://localhost:8080/api/items/65f207229817fc02526d6bd2
+GET http://localhost:8080/api/items/65c90a7a3a38083f90cd04f6
+
+
+###
+POST http://localhost:8080/api/users/register
+Content-Type: application/json
+
+{
+    "name":"test",
+    "empId":1,
+    "password":"test"
+}
+
+###
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+    "empId":1,
+    "password":"test"
+}
+
+
+###
+GET http://localhost:8080/api/orders/getorders

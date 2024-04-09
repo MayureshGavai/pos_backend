@@ -12,7 +12,7 @@ router.get('/:id', getItemByIdController);
 router.post('/postitems',postItemsController)
 
 
-router.patch('/items/:id', updateItemById);
+router.put('/:id', updateItemById);
 
 router.delete('/:id',deleteItemController)
 

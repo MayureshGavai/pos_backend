@@ -11,7 +11,7 @@ const getItemController = async (req, res) => {
 };
 
 const getItemByIdController = async (req, res) => {
-  const {itemId} = req.params
+  const itemId = req.params.id
   try {
     const item = await itemModel.findById({_id:itemId});
     res.status(200).send(item);
@@ -26,19 +26,19 @@ const getItemByIdController = async (req, res) => {
 const postItemsController = async (req, res) => {
   try {
     // Extract data from request body
-    const { itemName, itemPrice, itemCategory, itemImage } = req.body;
+    const { name, price, category, image } = req.body;
 
     // Check if all required fields are present
-    if (!itemName || !itemPrice || !itemCategory || !itemImage) {
+    if (!name || !price || !category || !image) {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
     // Create a new item object
     const newItem = new itemModel({
-        name: itemName,
-        price: itemPrice,
-        category: itemCategory,
-        image: itemImage
+        name: name,
+        price: price,
+        category: category,
+        image: image
     });
 
     // Save the new item to the database
@@ -54,16 +54,17 @@ const postItemsController = async (req, res) => {
 
 
 const updateItemById = async (req, res) => {
-  const { itemId } = req.params;
-  const { itemName, itemPrice, itemCategory, itemImage } = req.body;
-
+  const itemId = req.params.id
+  const { name, price, category, image } = req.body;
+  // const updateData = req.body;
   try {
-    const updatedItem = await Item.findByIdAndUpdate({_id: itemId}, {
-      itemName,
-      itemPrice,
-      itemCategory,
-      itemImage
+    const updatedItem = await itemModel.findByIdAndUpdate({_id: itemId}, {
+      name,
+      price,
+      category,
+      image
     }, { new: true });
+    // const updatedItem = await itemModel.findOneAndUpdate({ _id: itemId }, updateData, { new: true });
 
     if (!updatedItem) {
       return res.status(404).json({ message: 'Item not found' });
@@ -78,8 +79,8 @@ const updateItemById = async (req, res) => {
 
 const deleteItemController = async (req, res) => {
   try {
-    const { _id } = req.params;
-    const deletedItem = await itemModel.findByIdAndDelete({_id});
+    const itemId = req.params.id
+    const deletedItem = await itemModel.findByIdAndDelete({_id:itemId});
     if (!deletedItem) {
       return res.status(404).json({ message: 'Item not found' });
     }

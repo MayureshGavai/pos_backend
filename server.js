@@ -3,7 +3,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const connectDB = require('./src/config/config')
 const bodyParser = require('body-parser')
-const router = require('./src/routes/items.route')
+// const router = require('./src/routes/items.route')
 
 
 require('dotenv').config()
@@ -24,8 +24,9 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(morgan("dev"))
 
 //routes
-app.use('/api/items',router)
-
+app.use('/api/items',require('./src/routes/items.route'))
+app.use('/api/users',require('./src/routes/users.route'))
+app.use('/api/orders',require('./src/routes/order.route'))
 
 const port = process.env.PORT || 8080
 
