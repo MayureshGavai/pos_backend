@@ -14,18 +14,18 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:8080/api/items/65c90a7a3a38083f90cd0505
+PUT http://localhost:8080/api/items/66235c8e507155de889e5b34
 Content-Type: application/json
 
 {
-    "name": "Masala Dosa",
-    "price": 7,
+    "name": "Jalebi",
+    "price": 10,
     "category": "breakfast",
     "image": "https://www.palatesdesire.com/wp-content/uploads/2022/09/Mysore-masala-dosa-recipe@palates-desire.jpg"
 }
 
 ###
-DELETE http://localhost:8080/api/items/65f207229817fc02526d6bd2
+DELETE http://localhost:8080/api/items/66235c8e507155de889e5b34
 
 
 ###
@@ -37,9 +37,9 @@ POST http://localhost:8080/api/users/register
 Content-Type: application/json
 
 {
-    "name":"test",
-    "empId":1,
-    "password":"test"
+    "name":"mayuresh",
+    "empId":10,
+    "password":"mayuresh"
 }
 
 ###
