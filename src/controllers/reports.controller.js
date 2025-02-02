@@ -6,106 +6,183 @@ const generateExcelReport = async (orders) => {
     const worksheet = workbook.addWorksheet("Sales Report")
 
     worksheet.columns = [
-        {header : "Item", key : "name", width : 30},
-        {header : "Quantity", key : "quantity", width: 15},
-        {header : "Amount", key : "amount", width : 15}
+        { header: "Item", key: "name", width: 30 },
+        { header: "Quantity", key: "quantity", width: 15 },
+        { header: "Amount", key: "amount", width: 15 },
     ]
 
-    let totalAmount = 0;
+    let totalAmount = 0
     const itemMap = new Map()
 
-    orders.forEach(order => {
-        order.order.forEach(item => {
-            const {name, price, quantity} = item
+    orders.forEach((order) => {
+        order.order.forEach((item) => {
+            const { name, price, quantity } = item
             const totalPrice = price * quantity
-            
-            if(itemMap.has(name)){
-                const exisiting = itemMap.get(name)
-                exisiting.quantity += quantity
-                exisiting.amount += totalPrice
-            }else{
-                itemMap.set(name, {name, quantity, amount : totalPrice})
+
+            if (itemMap.has(name)) {
+                const existing = itemMap.get(name)
+                existing.quantity += quantity
+                existing.amount += totalPrice
+            } else {
+                itemMap.set(name, { name, quantity, amount: totalPrice })
             }
 
             totalAmount += totalPrice
         })
     })
 
-    Array.from(itemMap.values()).forEach(item => {
+    Array.from(itemMap.values()).forEach((item) => {
         worksheet.addRow(item)
     })
 
-    worksheet.addRow(["","Total:",totalAmount])
+    worksheet.addRow(["", "Total:", totalAmount])
 
     const lastRow = worksheet.lastRow
-    lastRow.eachCell(cell => {
-        cell.font = {bold:true}
+    lastRow.eachCell((cell) => {
+        cell.font = { bold: true }
     })
 
-    const buffer = await workbook.xlsx.writeBuffer()
-    return buffer
+    return workbook.xlsx.writeBuffer()
 }
 
-const getTodaySalesReport = async (req,res) => {
-    try{
-        const today = new Date()
-        today.setHours(0,0,0,0)
-        const endOfday = new Date()
-        endDay.setHours(23,59,599,999)
+const getReportData = async (orders) => {
+    let totalAmount = 0;
+    const itemMap = new Map();
 
-        const orders = await orderModel.find({
-            createdAt : {$gte : today, $lte : endOfday}
-        })
+    orders.forEach((order) => {
+        order.order.forEach((item) => {
+            const { name, price, quantity } = item;
+            const totalPrice = price * quantity;
 
-        if(orders.length === 0){
-            return res.status(404).json({message : "No report data today."})
-        }
+            if (itemMap.has(name)) {
+                const existing = itemMap.get(name);
+                existing.quantity += quantity;
+                existing.amount += totalPrice;
+            } else {
+                itemMap.set(name, { name, quantity, amount: totalPrice });
+            }
 
-        const buffer = await generateExcelReport(orders)
-        res.setHeader("Content-Disposition", `attachment; filename=today_sales.xlsx`)
-        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        res.send(buffer)
+            totalAmount += totalPrice;
+        });
+    });
 
-    }catch(error){
-        console.log(err)
-        res.status(500).json({message:"Error in Generating Report",error: err.message})
+    const reportData = Array.from(itemMap.values());
+
+    return {
+        items: reportData,
+        totalAmount: totalAmount
     }
 }
 
-const getSalesReportByDateRange = async (req,res) => {
-    try{
-        const {fromDate , toDate} = req.body
+const getTodaySalesReportController = async (req, res) => {
+    try {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const endOfDay = new Date()
+        endOfDay.setHours(23, 59, 59, 999)
+
+        const orders = await orderModel.find({
+            orderDate: { $gte: today, $lte: endOfDay },
+        })
+
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "No report data today." })
+        }
+
+        const buffer = await generateExcelReport(orders)
+        res.setHeader("Content-Disposition", "attachment filename=today_sales.xlsx")
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        res.send(buffer)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Error generating today's report", error: err.message })
+    }
+}
+
+const getSalesReportByDateRangeController = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { fromDate, toDate } = req.body
 
         if (!fromDate || !toDate) {
             return res.status(400).json({ message: "Both fromDate and toDate are required" })
         }
 
         const startDate = new Date(fromDate)
-        startDate.setHours(0,0,0,0)
+        startDate.setHours(0, 0, 0, 0)
         const endDate = new Date(toDate)
-        endDate.setHours(23,59,59,999)
+        endDate.setHours(23, 59, 59, 999)
 
         const orders = await orderModel.find({
-            createdAt : {$gte : startDate, $lte : endDate}
+            orderDate: { $gte: startDate, $lte: endDate },
         })
 
-        if(orders.length === 0){
-            return res.status(404).json({message : "No report data today."})
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "No report data for the selected date range." })
         }
 
         const buffer = await generateExcelReport(orders)
-        res.setHeader("Content-Disposition", `attachment; filename=sales_report_${fromDate}_to_${toDate}.xlsx`)
-        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        res.send(buffer)
-
-    }catch(error){
-        console.log(err)
-        res.status(500).json({message:"Error in Generating Report",error: err.message})
+        res.setHeader("Content-Disposition", `attachment; filename=sales_report_${fromDate}_to_${toDate}.xlsx`);
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.end(buffer)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Error generating report", error: err.message })
     }
 }
 
+const getTodaySalesController = async (req, res) => {
+    try {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const endOfDay = new Date()
+        endOfDay.setHours(23, 59, 59, 999)
 
-//display reports controller
+        const orders = await orderModel.find({
+            orderDate: { $gte: today, $lte: endOfDay },
+        })
 
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "No orders today." })
+        }
 
-module.exports = {getTodaySalesReport, getSalesReportByDateRange}
+        const reportData = await getReportData(orders)
+        
+        res.status(200).json(reportData)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Internal server error", error: err.message })
+    }
+}
+
+const getDateRangeSalesController = async (req, res) => {
+    try {
+        const { fromDate, toDate } = req.body
+
+        if (!fromDate || !toDate) {
+            return res.status(400).json({ message: "Both fromDate and toDate are required" })
+        }
+
+        const startDate = new Date(fromDate)
+        startDate.setHours(0, 0, 0, 0)
+        const endDate = new Date(toDate)
+        endDate.setHours(23, 59, 59, 999)
+
+        const orders = await orderModel.find({
+            orderDate: { $gte: startDate, $lte: endDate },
+        })
+
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "No orders found in this date range." })
+        }
+
+        const reportData = await getReportData(orders)
+
+        res.status(200).json(reportData)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Internal server error", error: err.message })
+    }
+}
+
+module.exports = {getTodaySalesController, getDateRangeSalesController, getTodaySalesReportController, getSalesReportByDateRangeController}

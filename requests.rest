@@ -54,3 +54,23 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/api/orders/getorders
+
+###
+POST http://localhost:8080/api/orders/postorder
+Content-Type: application/json
+
+{
+    "billNumber": 1234,
+    "contactNumber": "9876543210",
+    "customerName": "John Doe",
+    "hostName": "Cashier1",
+    "order": [{"name": "Pizza", "price": 200, "quantity": 2}],
+    "orderNumber": 5678,
+    "paymentOption": "Cash",
+    "subTotal": 400,
+    "tax": 20,
+    "total": 420
+}
+
+###
+GET http://localhost:8080/api/reports/get-today-sales

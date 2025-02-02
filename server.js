@@ -27,6 +27,7 @@ app.use(morgan("dev"))
 app.use('/api/items',require('./src/routes/items.route'))
 app.use('/api/users',require('./src/routes/users.route'))
 app.use('/api/orders',require('./src/routes/order.route'))
+app.use('/api/reports',require('./src/routes/reports.route'))
 
 const port = process.env.PORT || 8080
 

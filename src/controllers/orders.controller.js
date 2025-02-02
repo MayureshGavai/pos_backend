@@ -17,11 +17,14 @@ const postOrderController = async (req,res) => {
         hostName : hostName,
         order : order,
         orderNumber : orderNumber,
+        orderDate : new Date(),
         paymentOption : paymentOption,
         subTotal : subTotal,
         tax : tax,
         total : total
     })
+
+    // console.log(newOrder)
 
     await newOrder.save()
 
